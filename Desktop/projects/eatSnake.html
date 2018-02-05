@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>贪吃蛇</title>
+</head>
+<body>
+	<style>
+		#map{
+			border: 1px #ff00ff solid;
+		}
+	</style>
+	<canvas id="map" width="500px" height="500px" ></canvas>
+	<script>
+		let food = {
+			name:"food",
+			xP :0,
+			yP :0
+		}
+		let Snake = {
+			snake : [],
+			isLive : true,
+			headTo : 1
+		}
+		
+		//初始化元素
+		var canvas = document.getElementById("map");
+		var ctx = canvas.getContext("2d");
+		ctx.fillStyle = "#ff0000";
+
+		//主函数
+		document.body.onload = game;
+		function game(){
+			// console.log(arguments.callee.name);
+			init();
+			setInterval("gameloop()",300);
+			// document.onkeydown = function(e){
+
+			// }
+		} 
+		function init(){
+			// console.log(arguments.callee.name);
+			createSnake();
+			// drawBackground();
+			createFood();
+			drawSnake();
+			drawFood();
+		}
+
+		function gameloop(){
+			// console.log(arguments.callee.name);
+			judgement();
+			if (Snake.isLive == true){
+				update();
+				// console.log(Snake.snake[0][0]);
+				// console.log(Snake.snake[0][1]);
+				// console.log(food.xP);
+				// console.log(food.yP);
+			}
+			else{
+				alert("game over");
+				window.location.reload();
+			}
+		}
+
+		function update(){
+			// console.log(arguments.callee.name);
+			ctx.clearRect(0,0,500,500);
+			// console.log("clear done");
+			drawSnake();
+			drawFood();
+		}
+
+		function drawFood(){
+			// console.log(arguments.callee.name);
+			ctx.fillRect(food.xP,food.yP,10,10);
+		}
+
+		function judgement(){
+			// console.log(arguments.callee.name);
+			let pos = -1;
+			document.onkeydown = function(e){
+				switch(e.keyCode){
+				case 37: //左键
+				pos = -1;
+		　　　　break;
+		　　　　case 38: //向上键
+				pos = -2;
+		　　　　break;
+		　　　　case 39: //右键
+				pos = 1;
+		　　　　break;
+		　　　　case 40: //向下键
+				pos = 2;
+		　　　　break;
+		　　　　case 13: //回车键
+		// 　　　　console.log("回车");
+		　　　　default:
+		　　　　break;
+				}
+				if(Snake.headTo + pos != 0 ){
+					Snake.headTo = pos;
+				}	
+			}
+			if(Snake.snake[0][0] < 0 || Snake.snake[0][0] > 490 || Snake.snake[0][1] < 0 || Snake.snake[0][1] > 490){
+				isLive = false;
+				alert("gameover");
+				window.location.reload();
+			}
+			
+			if(food.xP == Snake.snake[0][0] && food.yP == Snake.snake[0][1]){
+				growSnake();
+			}
+			else{
+				moveSnake();
+			}
+		}
+		
+		function growSnake(){
+			// console.log(arguments.callee.name);
+			let newCell = new cell(Snake.snake[Snake.snake.length-1][0],Snake.snake[Snake.snake.length-1][1]);
+			Snake.snake.push([newCell.x,newCell.y]);
+			for(let i=Snake.snake.length-2;i>0;i--){
+				let newSnakeHead = new cell(Snake.snake[i-1][0],Snake.snake[i-1][1]);
+				Snake.snake[i][0] = newSnakeHead.x;
+				Snake.snake[i][1] = newSnakeHead.y;
+			}
+			switch(Snake.headTo){
+				case 1:Snake.snake[0][0] += 10;break;
+				case -1:Snake.snake[0][0] -= 10;break;
+				case 2:Snake.snake[0][1] += 10;break;
+				case -2:Snake.snake[0][1] -= 10;break;
+			}
+			createFood();
+		}
+		function cell(x,y){
+			this.x = x;
+			this.y = y;
+			return this;
+		}
+		function moveSnake(){
+			// console.log(arguments.callee.name);
+			for(let i=Snake.snake.length-1;i>0;i--){
+				let newSnakeHead = new cell(Snake.snake[i-1][0],Snake.snake[i-1][1]);
+				Snake.snake[i][0] = newSnakeHead.x;
+				Snake.snake[i][1] = newSnakeHead.y;
+				// console.log(Snake.snake[i]);
+			}
+			switch(Snake.headTo){
+				case 1:Snake.snake[0][0] += 10;break;
+				case -1:Snake.snake[0][0] -= 10;break;
+				case 2:Snake.snake[0][1] += 10;break;
+				case -2:Snake.snake[0][1] -= 10;break;
+			}
+			// console.log(Snake.snake);
+		}
+
+		function createFood(){
+			// console.log(arguments.callee.name);
+			let x = 10 * Math.floor(49*Math.random());
+			let y = 10 * Math.floor(49*Math.random());
+			food.xP = x;
+			food.yP = y;
+			// console.log(x);
+		}
+		function createSnake(){
+			// console.log(arguments.callee.name);
+			let x = 10 * Math.floor(49*Math.random());
+			let y = 10 * Math.floor(49*Math.random());
+			Snake.snake.push([x,y]);
+			Snake.snake.push([x-10,y]);
+			console.log(Snake);
+		}
+		function drawSnake(){
+			// console.log(arguments.callee.name);
+			for(let i = 0 ;i < Snake.snake.length;i++){
+				ctx.fillRect(Snake.snake[i][0],Snake.snake[i][1],10,10);
+			}
+		}
+	</script>
+</body>
+</html>
